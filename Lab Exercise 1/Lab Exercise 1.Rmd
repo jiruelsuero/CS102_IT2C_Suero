@@ -12,12 +12,6 @@ Scraping for Dog and Cat Food/Accessories
 
 ```{r}
 
-#install.packages("dplyr")
-#install.packages("rvest")
-#install.packages("polite")
-#install.packages("httr")
-
-
 library(rvest)
 library(polite)
 library(httr)
@@ -58,8 +52,6 @@ dogfood_products <- data.frame(category = scrapedCategory,
                                no_of_reviews = scraped_reviews)
 
 
-library(rvest)
-
 ###
       dogfoodlink2 <- "https://www.amazon.com.au/s?k=dog+food&page=2&crid=2AYJSM2G6D8PA&qid=1707408834&sprefix=dogfoo%2Caps%2C267&ref=sr_pg_2"
 
@@ -93,7 +85,6 @@ dogcat_products <- data.frame(category = scrapedCategory2,
 
 
 
-library(rvest)
 
 ###
   
@@ -152,7 +143,7 @@ dogcat_products <- rbind(dogcat_products, data.frame(category = scrapedCategory4
 dogcat_products <- dogcat_products[1:100,]
 
 
-View(dogcat_products)
+dogcat_products
 
 
 ```
@@ -161,15 +152,6 @@ Scraping Rabbit and Hamster Food/Accessories
 
 ```{r}
 
-
-library(dplyr)
-library(rvest)
-library(polite)
-library(httr)
-library(dplyr)
-library(polite)
-library(dplyr)
-library(polite)
 
 rabbitHamster_products <- data.frame()
 
@@ -252,7 +234,7 @@ rabbitHamster_products <- rabbitHamster_products[1:100,]
 
 print(rabbitHamster_products)
 
-View(rabbitHamster_products)
+rabbitHamster_products
 
 ```
 
@@ -260,7 +242,7 @@ MERGING TWO PRODUCTS
 
 ```{r}
 scraped_products <- rbind(dogcat_products, rabbitHamster_products)
-View(scraped_products)
+scraped_products
 ```
 
 10 PRODUCTS I've selected
@@ -268,12 +250,6 @@ View(scraped_products)
 Product1
 
 ```{r}
-
-library(dplyr)
-library(rvest)
-library(polite)
-library(httr)
-library(selectr)
 
 product1 = data.frame()
 scrapedCategory <- "Dog/Cat Accessories"
@@ -315,7 +291,7 @@ product3 <- scrapeProductDetails(link3)
 
 product_all1 <- rbind(product1, product2, product3)
 
-View(product_all1)
+product_all1
 
 ```
 
@@ -369,7 +345,7 @@ product3 <- scrapeProductDetails(link3)
 
 product_all2 <- rbind(product1, product2, product3)
 
-View(product_all2)
+product_all2
 ```
 
 Product3
@@ -422,7 +398,7 @@ product3 <- scrapeProductDetails(link3)
 
 product_all3 <- rbind(product1, product2, product3)
 
-View(product_all3)
+product_all3
 ```
 
 
@@ -477,7 +453,7 @@ product3 <- scrapeProductDetails(link3)
 
 product_all4 <- rbind(product1, product2, product3)
 
-View(product_all4)
+product_all4
 ```
 
 Product5
@@ -530,7 +506,7 @@ product3 <- scrapeProductDetails(link3)
 
 product_all5 <- rbind(product1, product2, product3)
 
-View(product_all5)
+product_all5
 ```
 
 Product6
@@ -583,7 +559,7 @@ product3 <- scrapeProductDetails(link3)
 
 product_all6 <- rbind(product1, product2, product3)
 
-View(product_all6)
+product_all6
 ```
 
 Product7
@@ -636,7 +612,7 @@ product3 <- scrapeProductDetails(link3)
 
 product_all7 <- rbind(product1, product2, product3)
 
-View(product_all7)
+product_all7
 ```
 
 Product8
@@ -689,7 +665,7 @@ product3 <- scrapeProductDetails(link3)
 
 product_all8 <- rbind(product1, product2, product3)
 
-View(product_all8)
+product_all8
 ```
 
 
@@ -743,7 +719,7 @@ product3 <- scrapeProductDetails(link3)
 
 product_all9 <- rbind(product1, product2, product3)
 
-View(product_all9)
+product_all9
 ```
 
 
@@ -798,7 +774,7 @@ product3 <- scrapeProductDetails(link3)
 
 product_all10 <- rbind(product1, product2, product3)
 
-View(product_all10)
+product_all10
 
 
 
@@ -809,7 +785,7 @@ All Reviews
 ```{r}
 
 all_reviews <- rbind(product_all1, product_all2, product_all3, product_all4, product_all5, product_all6, product_all7, product_all8, product_all9, product_all10)
-View(all_reviews)
+all_reviews
 
 library(usethis)
 ```
