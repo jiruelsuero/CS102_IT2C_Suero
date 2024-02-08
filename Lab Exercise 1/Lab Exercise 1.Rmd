@@ -8,410 +8,808 @@ date: "2024-02-08"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Scraping for Dog and Cat Food/Accessories 
+
 ```{r}
+
+#install.packages("dplyr")
+#install.packages("rvest")
+#install.packages("polite")
+#install.packages("httr")
+
+
 library(rvest)
+library(polite)
+library(httr)
+
+
+dogcat_products <- data.frame()
+
+
+dogfoodlink1 <- "https://www.amazon.com.au/s?k=dogfood&crid=2AYJSM2G6D8PA&sprefix=dogfoo%2Caps%2C267&ref=nb_sb_noss_2"
+
+session <- html_session(dogfoodlink1,
+                        user_agent = "For Educational Purpose")
+
+scrapeNodes <- function(session, selector) {
+  session %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+scrapedCategory <- "DogFood"
+
+scrapedName <- scrapeNodes(session, "h2.a-size-base-plus.a-color-base.a-text-normal")
+scrapedName <- scrapedName[1:40]
+
+scraped_price <- scrapeNodes(session, "span.a-offscreen")
+scraped_price <- scraped_price[1:40]
+
+scraped_ratings <- scrapeNodes(session, "span.a-icon-alt")
+scraped_ratings <- scraped_ratings[1:40]
+
+scraped_reviews <- scrapeNodes(session, "span.a-size-base.s-underline-text")
+scraped_reviews <- scraped_reviews[1:40]
+
+dogfood_products <- data.frame(category = scrapedCategory,
+                               name = scrapedName,
+                               price = scraped_price,
+                               ratings = scraped_ratings,
+                               no_of_reviews = scraped_reviews)
+
+
+library(rvest)
+
+###
+      dogfoodlink2 <- "https://www.amazon.com.au/s?k=dog+food&page=2&crid=2AYJSM2G6D8PA&qid=1707408834&sprefix=dogfoo%2Caps%2C267&ref=sr_pg_2"
+
+    session2 <- html_session(dogfoodlink2, user_agent = "For Educational Purpose")
+
+      scrapeNodes <- function(session, selector) {
+  session %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+scrapedCategory2 <- "DogFood"
+
+scraped_name2 <- scrapeNodes(session2, "h2.a-size-mini.a-spacing-none.a-color-base.s-line-clamp-4")
+scraped_name2 <- scraped_name2[1:40]
+
+scraped_price2 <- scrapeNodes(session2, "span.a-offscreen")
+scraped_price2 <- scraped_price2[1:40]
+
+scraped_ratings2 <- scrapeNodes(session2, "span.a-icon-alt")
+scraped_ratings2 <- scraped_ratings2[1:40]
+
+scraped_reviews2 <- scrapeNodes(session2, "span.a-size-base.s-underline-text")
+scraped_reviews2 <- scraped_reviews2[1:40]
+
+dogcat_products <- data.frame(category = scrapedCategory2,
+                               name = scraped_name2,
+                               price = scraped_price2,
+                               ratings = scraped_ratings2,
+                               no_of_reviews = scraped_reviews2)
+
+
+
+library(rvest)
+
+###
+  
+dogfoodlink3 <- "https://www.amazon.com.au/s?k=dog+food&page=3&crid=2AYJSM2G6D8PA&qid=1707408867&sprefix=dogfoo%2Caps%2C267&ref=sr_pg_3"
+
+session3 <- html_session(dogfoodlink3, user_agent = "For Educational Purpose")
+
+scrapedCategory3 <- "DogFood"
+
+scraped_name3 <- scrapeNodes(session3, "h2.a-size-mini.a-spacing-none.a-color-base.s-line-clamp-4")
+scraped_name3 <- scraped_name3[1:40]
+
+scraped_price3 <- scrapeNodes(session3, "span.a-offscreen")
+scraped_price3 <- scraped_price3[1:40]
+
+scraped_ratings3 <- scrapeNodes(session3, "span.a-icon-alt")
+scraped_ratings3 <- scraped_ratings3[1:40]
+
+scraped_reviews3 <- scrapeNodes(session3, "span.a-size-base.s-underline-text")
+scraped_reviews3 <- scraped_reviews3[1:40]
+
+dogcat_products <- rbind(dogcat_products, data.frame(category = scrapedCategory3,
+                                                       name = scraped_name3,
+                                                       price = scraped_price3,
+                                                       ratings = scraped_ratings3,
+                                                       no_of_reviews = scraped_reviews3))
+
+
+
+###
+
+dogfoodlink4 <- "https://www.amazon.com.au/s?k=dog+food&page=4&crid=2AYJSM2G6D8PA&qid=1707408890&sprefix=dogfoo%2Caps%2C267&ref=sr_pg_4"
+
+session4 <- html_session(dogfoodlink4, user_agent = "For Educational Purpose")
+
+scrapedCategory4 <- "DogFood"
+
+scraped_name4 <- scrapeNodes(session4, "h2.a-size-mini.a-spacing-none.a-color-base.s-line-clamp-4")
+scraped_name4 <- scraped_name4[1:40]
+
+scraped_price4 <- scrapeNodes(session4, "span.a-offscreen")
+scraped_price4 <- scraped_price4[1:40]
+
+scraped_ratings4 <- scrapeNodes(session4, "span.a-icon-alt")
+scraped_ratings4 <- scraped_ratings4[1:40]
+
+scraped_reviews4 <- scrapeNodes(session4, "span.a-size-base.s-underline-text")
+scraped_reviews4 <- scraped_reviews4[1:40]
+
+dogcat_products <- rbind(dogcat_products, data.frame(category = scrapedCategory4,
+                                                       name = scraped_name4,
+                                                       price = scraped_price4,
+                                                       ratings = scraped_ratings4,
+                                                       no_of_reviews = scraped_reviews4))
+
+dogcat_products <- dogcat_products[1:100,]
+
+
+View(dogcat_products)
+
+
+```
+
+Scraping Rabbit and Hamster Food/Accessories
+
+```{r}
+
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
 library(dplyr)
 library(polite)
-library(xml2)
-
-
-url <- "https://www.amazon.co.uk/s?k=gaming+chair&crid=2WHWEZEV4QX4W&currency=JPY&sprefix=gaming+cha%2Caps%2C488&ref=nb_sb_noss_2"
-
-session <- bow(url,user_agent = "For Educational Purposes")
-
-amazon <- read_html(url)
-
-```
-#Products Dog Food
-```{r}
-Name <- scrape(session) %>%
-  html_nodes("span.a-text-normal") %>%
-  html_text
-Name
-Names<- Name[1:48]
-Names
-```
-
-```{r}
-Price <- scrape(session) %>%
-  html_nodes("span.a-price-whole") %>%
-  html_text
-Price
-```
-
-```{r}
-slides_Ratings <- scrape(session) %>%
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4.aok-align-bottom") %>%
-  html_text
-slides_Ratings
-```
-```{r}
-slides_noReviews <- scrape(session) %>%
-  html_nodes("span.a-size-base.s-underline-text") %>%
-  html_text
-slides_noReviews
-```
-
-```{r}
-url <- "https://www.amazon.co.uk/s?k=slides&page=2&crid=38UVNRLWHLBX&qid=1707354108&sprefix=slid%2Caps%2C500&ref=sr_pg_1"
-
-session <- bow(url,user_agent = "For Educational Purposes")
-
-amazon <- read_html(url)
-
-
-slides2 <- scrape(session) %>%
-  html_nodes("span.a-text-normal") %>%
-  html_text
-slides2
-slides44 <- slides[1:44]
-slides44
-
-slides_prices2 <- scrape(session) %>%
-  html_nodes("span.a-price-whole") %>%
-  html_text
-slides_prices2
-```
-
-```{r}
-slides_Ratings2 <- scrape(session) %>%
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4.aok-align-bottom") %>%
-  html_text
-slides_Ratings2
-
-slides_noReviews2 <- scrape(session) %>%
-  html_nodes("span.a-size-base.s-underline-text") %>%
-  html_text
-slides_noReviews2
-```
-
----
-title: "Lab Exercise 1"
-output: html_document
-date: "2024-02-08"
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-
-```{r}
-library(rvest)
 library(dplyr)
 library(polite)
-library(xml2)
 
+rabbitHamster_products <- data.frame()
 
-url <- "https://www.amazon.co.uk/s?k=gaming+chair&crid=2WHWEZEV4QX4W&currency=JPY&sprefix=gaming+cha%2Caps%2C488&ref=nb_sb_noss_2"
+rabbitHamsterlink1 <- "https://www.amazon.com.au/s?k=rabbit+accessories&page=4&crid=2VE10B0M6ZD35&qid=1707410930&sprefix=rabbit+acce%2Caps%2C294&ref=sr_pg_4"
+session1 <- bow(rabbitHamsterlink1, user_agent = "For Educational Purpose")
 
-session <- bow(url,user_agent = "For Educational Purposes")
+scrapeNodes <- function(session, selector) {
+  scrape(session) %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
 
-amazon <- read_html(url)
+category5 <- "Rabbit and Hamster"
+scrapedrabbitHamsterName <- scrapeNodes(session1, "h2.a-size-mini.a-spacing-none.a-color-base.s-line-clamp-4")
+scrapedrabbitHamsterName <- scrapedrabbitHamsterName[1:37]
+scrapedrabbitHamsterPrice <- scrapeNodes(session1, "span.a-offscreen")
+scrapedrabbitHamsterPrice <- scrapedrabbitHamsterPrice[1:37]
+scrapedrabbitHamsterRatings <- scrapeNodes(session1, "span.a-icon-alt")
+scrapedrabbitHamsterRatings <- scrapedrabbitHamsterRatings[1:37]
+scrapedrabbitHamsterReviews <- scrapeNodes(session1, "span.a-size-base.s-underline-text")
+scrapedrabbitHamsterReviews <- scrapedrabbitHamsterReviews[1:37]
+
+rabbitHamster_products <- data.frame(
+  category = category5,
+  name = scrapedrabbitHamsterName,
+  price = scrapedrabbitHamsterPrice,
+  ratings = scrapedrabbitHamsterRatings,
+  no_of_reviews = scrapedrabbitHamsterReviews
+)
+
+rabbitHamsterlink2 <- "https://www.amazon.com.au/s?k=rabbit+accessories&page=2&crid=2VE10B0M6ZD35&qid=1707410251&sprefix=rabbit+acce%2Caps%2C294&ref=sr_pg_2"
+session2 <- bow(rabbitHamsterlink2, user_agent = "For Educational Purpose")
+
+category6 <- "Rabbit and Hamster"
+scrapedrabbitHamsterName2 <- scrapeNodes(session2, "h2.a-size-mini.a-spacing-none.a-color-base.s-line-clamp-4")
+scrapedrabbitHamsterName2 <- scrapedrabbitHamsterName2[1:40]
+scrapedrabbitHamsterPrice2 <- scrapeNodes(session2, "span.a-offscreen")
+scrapedrabbitHamsterPrice2 <- scrapedrabbitHamsterPrice2[1:40]
+scrapedrabbitHamsterRatings2 <- scrapeNodes(session2, "span.a-icon-alt")
+scrapedrabbitHamsterRatings2 <- scrapedrabbitHamsterRatings2[1:40]
+scrapedrabbitHamsterReviews2 <- scrapeNodes(session2, "span.a-size-base.s-underline-text")
+scrapedrabbitHamsterReviews2 <- scrapedrabbitHamsterReviews2[1:40]
+
+rabbitHamster_products <- rbind(
+  rabbitHamster_products,
+  data.frame(
+    category = category6,
+    name = scrapedrabbitHamsterName2,
+    price = scrapedrabbitHamsterPrice2,
+    ratings = scrapedrabbitHamsterRatings2,
+    no_of_reviews = scrapedrabbitHamsterReviews2
+  )
+)
+
+rabbitHamsterlink3 <- "https://www.amazon.com.au/s?k=rabbit+accessories&page=3&crid=2VE10B0M6ZD35&qid=1707410603&sprefix=rabbit+acce%2Caps%2C294&ref=sr_pg_3"
+session3 <- bow(rabbitHamsterlink3, user_agent = "For Educational Purpose")
+
+category7 <- "Rabbit and Hamster"
+scrapedrabbitHamsterName3 <- scrapeNodes(session3, "h2.a-size-mini.a-spacing-none.a-color-base.s-line-clamp-4")
+scrapedrabbitHamsterName3 <- scrapedrabbitHamsterName3[1:23]
+scrapedrabbitHamsterPrice3 <- scrapeNodes(session3, "span.a-offscreen")
+scrapedrabbitHamsterPrice3 <- scrapedrabbitHamsterPrice3[1:23]
+scrapedrabbitHamsterRatings3 <- scrapeNodes(session3, "span.a-icon-alt")
+scrapedrabbitHamsterRatings3 <- scrapedrabbitHamsterRatings3[1:23]
+scrapedrabbitHamsterReviews3 <- scrapeNodes(session3, "span.a-size-base.s-underline-text")
+scrapedrabbitHamsterReviews3 <- scrapedrabbitHamsterReviews3[1:23]
+
+rabbitHamster_products <- rbind(
+  rabbitHamster_products,
+  data.frame(
+    category = category7,
+    name = scrapedrabbitHamsterName3,
+    price = scrapedrabbitHamsterPrice3,
+    ratings = scrapedrabbitHamsterRatings3,
+    no_of_reviews = scrapedrabbitHamsterReviews3
+  )
+)
+
+rabbitHamster_products <- rabbitHamster_products[1:100,]
+
+print(rabbitHamster_products)
+
+View(rabbitHamster_products)
 
 ```
-#Products Dog Food
+
+MERGING TWO PRODUCTS
+
 ```{r}
-Name <- scrape(session) %>%
-  html_nodes("span.a-text-normal") %>%
-  html_text
-Name
-Names<- Name[49:100]
-Names
+scraped_products <- rbind(dogcat_products, rabbitHamster_products)
+View(scraped_products)
 ```
 
-```{r}
-Price <- scrape(session) %>%
-  html_nodes("span.a-price-whole") %>%
-  html_text
-Price
-```
+10 PRODUCTS I've selected
+
+Product1
 
 ```{r}
-slides_Ratings <- scrape(session) %>%
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4.aok-align-bottom") %>%
-  html_text
-slides_Ratings
-```
-```{r}
-slides_noReviews <- scrape(session) %>%
-  html_nodes("span.a-size-base.s-underline-text") %>%
-  html_text
-slides_noReviews
-```
 
-```{r}
-url <- "https://www.amazon.co.uk/s?k=slides&page=2&crid=38UVNRLWHLBX&qid=1707354108&sprefix=slid%2Caps%2C500&ref=sr_pg_1"
-
-session <- bow(url,user_agent = "For Educational Purposes")
-
-amazon <- read_html(url)
-
-
-slides2 <- scrape(session) %>%
-  html_nodes("span.a-text-normal") %>%
-  html_text
-slides2
-slides44 <- slides[49:100]
-slides44
-
-slides_prices2 <- scrape(session) %>%
-  html_nodes("span.a-price-whole") %>%
-  html_text
-slides_prices2
-```
-
-```{r}
-slides_Ratings2 <- scrape(session) %>%
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4.aok-align-bottom") %>%
-  html_text
-slides_Ratings2
-
-slides_noReviews2 <- scrape(session) %>%
-  html_nodes("span.a-size-base.s-underline-text") %>%
-  html_text
-slides_noReviews2
-```
-
-```{r}
-library(rvest)
 library(dplyr)
-library(polite)
-library(xml2)
-
-
-url <- "https://www.amazon.co.uk/s?k=gaming+chair&crid=2WHWEZEV4QX4W&currency=JPY&sprefix=gaming+cha%2Caps%2C488&ref=nb_sb_noss_2"
-
-session <- bow(url,user_agent = "For Educational Purposes")
-
-amazon <- read_html(url)
-
-```
-#Products Dog Food
-```{r}
-Name <- scrape(session) %>%
-  html_nodes("span.a-text-normal") %>%
-  html_text
-Name
-Names<- Name[49:100]
-Names
-```
-
-```{r}
-Price <- scrape(session) %>%
-  html_nodes("span.a-price-whole") %>%
-  html_text
-Price
-```
-
-```{r}
-slides_Ratings <- scrape(session) %>%
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4.aok-align-bottom") %>%
-  html_text
-slides_Ratings
-```
-```{r}
-slides_noReviews <- scrape(session) %>%
-  html_nodes("span.a-size-base.s-underline-text") %>%
-  html_text
-slides_noReviews
-```
-
-```{r}
-url <- "https://www.amazon.co.uk/s?k=slides&page=2&crid=38UVNRLWHLBX&qid=1707354108&sprefix=slid%2Caps%2C500&ref=sr_pg_1"
-
-session <- bow(url,user_agent = "For Educational Purposes")
-
-amazon <- read_html(url)
-
-
-slides2 <- scrape(session) %>%
-  html_nodes("span.a-text-normal") %>%
-  html_text
-slides2
-slides44 <- slides[1:44]
-slides44
-
-slides_prices2 <- scrape(session) %>%
-  html_nodes("span.a-price-whole") %>%
-  html_text
-slides_prices2
-```
-
-```{r}
-slides_Ratings2 <- scrape(session) %>%
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4.aok-align-bottom") %>%
-  html_text
-slides_Ratings2
-
-slides_noReviews2 <- scrape(session) %>%
-  html_nodes("span.a-size-base.s-underline-text") %>%
-  html_text
-slides_noReviews2
-```
-
-```{r}
 library(rvest)
-library(dplyr)
 library(polite)
-library(xml2)
+library(httr)
+library(selectr)
+
+product1 = data.frame()
+scrapedCategory <- "Dog/Cat Accessories"
+scrapeNodes <- function(session, selector) {
+  session %>%
+    scrape() %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
 
 
-url <- "https://www.amazon.co.uk/s?k=gaming+chair&crid=2WHWEZEV4QX4W&currency=JPY&sprefix=gaming+cha%2Caps%2C488&ref=nb_sb_noss_2"
+scrapeProductDetails <- function(link) {
+  session <- bow(link, user_agent = "For Educational Purpose")
+  
+  scrapedprodName <- scrapeNodes(session, "h1.a-size-large.a-text-ellipsis")
+  scrapedReviewer <- scrapeNodes(session, "span.a-profile-name")[1:9]
+  scrapedReview <- scrapeNodes(session, "span.a-size-base.review-text.review-text-content")[1:9]
+  scrapedDate <- scrapeNodes(session, "span.a-size-base.a-color-secondary.review-date")[1:9]
+  scrapedprodRating <- scrapeNodes(session, "span.a-icon-alt")[1:9]
+  
+  product <- data.frame(category = scrapedCategory,
+                        name = rep(scrapedprodName, each = 9),
+                        reviewer = scrapedReviewer,
+                        review = scrapedReview,
+                        date = scrapedDate,
+                        ratings = scrapedprodRating)
+  
+  return(product)
+}
 
-session <- bow(url,user_agent = "For Educational Purposes")
+link1 <- "https://www.amazon.com.au/Premier-Housewares-Adore-Lucky-Storage/product-reviews/B01DDM96SI/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews"
+product1 <- scrapeProductDetails(link1)
 
-amazon <- read_html(url)
+link2 <- "https://www.amazon.com.au/Premier-Housewares-Adore-Lucky-Storage/product-reviews/B01DDM96SI/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=2"
+product2 <- scrapeProductDetails(link2)
+
+link3 <- "https://www.amazon.com.au/Premier-Housewares-Adore-Lucky-Storage/product-reviews/B01DDM96SI/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=3"
+product3 <- scrapeProductDetails(link3)
+
+product_all1 <- rbind(product1, product2, product3)
+
+View(product_all1)
 
 ```
-#Products Dog Food
-```{r}
-Name <- scrape(session) %>%
-  html_nodes("span.a-text-normal") %>%
-  html_text
-Name
-Names<- Name[1:48]
-Names
-```
 
-```{r}
-Price <- scrape(session) %>%
-  html_nodes("span.a-price-whole") %>%
-  html_text
-Price
-```
-
-```{r}
-slides_Ratings <- scrape(session) %>%
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4.aok-align-bottom") %>%
-  html_text
-slides_Ratings
-```
-```{r}
-slides_noReviews <- scrape(session) %>%
-  html_nodes("span.a-size-base.s-underline-text") %>%
-  html_text
-slides_noReviews
-```
-
-```{r}
-url <- "https://www.amazon.co.uk/s?k=slides&page=2&crid=38UVNRLWHLBX&qid=1707354108&sprefix=slid%2Caps%2C500&ref=sr_pg_1"
-
-session <- bow(url,user_agent = "For Educational Purposes")
-
-amazon <- read_html(url)
-
-
-slides2 <- scrape(session) %>%
-  html_nodes("span.a-text-normal") %>%
-  html_text
-slides2
-slides44 <- slides[1:44]
-slides44
-
-slides_prices2 <- scrape(session) %>%
-  html_nodes("span.a-price-whole") %>%
-  html_text
-slides_prices2
-```
+Product2
 
 ```{r}
-slides_Ratings2 <- scrape(session) %>%
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4.aok-align-bottom") %>%
-  html_text
-slides_Ratings2
 
-slides_noReviews2 <- scrape(session) %>%
-  html_nodes("span.a-size-base.s-underline-text") %>%
-  html_text
-slides_noReviews2
-```
-
----
-title: "Lab Exercise 1"
-output: html_document
-date: "2024-02-08"
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-
-```{r}
+library(dplyr)
 library(rvest)
-library(dplyr)
 library(polite)
-library(xml2)
+library(httr)
+library(selectr)
+
+product1 = data.frame()
+scrapedCategory <- "Dog/Cat Accessories"
+scrapeNodes <- function(session, selector) {
+  session %>%
+    scrape() %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
 
 
-url <- "https://www.amazon.co.uk/s?k=gaming+chair&crid=2WHWEZEV4QX4W&currency=JPY&sprefix=gaming+cha%2Caps%2C488&ref=nb_sb_noss_2"
+scrapeProductDetails <- function(link) {
+  session <- bow(link, user_agent = "For Educational Purpose")
+  
+  scrapedprodName <- scrapeNodes(session, "h1.a-size-large.a-text-ellipsis")
+  scrapedReviewer <- scrapeNodes(session, "span.a-profile-name")[1:9]
+  scrapedReview <- scrapeNodes(session, "span.a-size-base.review-text.review-text-content")[1:9]
+  scrapedDate <- scrapeNodes(session, "span.a-size-base.a-color-secondary.review-date")[1:9]
+  scrapedprodRating <- scrapeNodes(session, "span.a-icon-alt")[1:9]
+  
+  product <- data.frame(category = scrapedCategory,
+                        name = rep(scrapedprodName, each = 9),
+                        reviewer = scrapedReviewer,
+                        review = scrapedReview,
+                        date = scrapedDate,
+                        ratings = scrapedprodRating)
+  
+  return(product)
+}
 
-session <- bow(url,user_agent = "For Educational Purposes")
+link1 <- "https://www.amazon.com.au/Sunmeyke-Stainless-Elevated-Adjustable-DB05-Black/product-reviews/B0B7HM65WB/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews"
+product1 <- scrapeProductDetails(link1)
 
-amazon <- read_html(url)
+link2 <- "https://www.amazon.com.au/Sunmeyke-Stainless-Elevated-Adjustable-DB05-Black/product-reviews/B0B7HM65WB/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=2"
+product2 <- scrapeProductDetails(link2)
 
+link3 <- "https://www.amazon.com.au/Sunmeyke-Stainless-Elevated-Adjustable-DB05-Black/product-reviews/B0B7HM65WB/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=3"
+product3 <- scrapeProductDetails(link3)
+
+product_all2 <- rbind(product1, product2, product3)
+
+View(product_all2)
 ```
-#Products Dog Food
-```{r}
-Name <- scrape(session) %>%
-  html_nodes("span.a-text-normal") %>%
-  html_text
-Name
-Names<- Name[1:48]
-Names
-```
 
-```{r}
-Price <- scrape(session) %>%
-  html_nodes("span.a-price-whole") %>%
-  html_text
-Price
-```
-
-```{r}
-slides_Ratings <- scrape(session) %>%
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4.aok-align-bottom") %>%
-  html_text
-slides_Ratings
-```
-```{r}
-slides_noReviews <- scrape(session) %>%
-  html_nodes("span.a-size-base.s-underline-text") %>%
-  html_text
-slides_noReviews
-```
-
-```{r}
-url <- "https://www.amazon.co.uk/s?k=slides&page=2&crid=38UVNRLWHLBX&qid=1707354108&sprefix=slid%2Caps%2C500&ref=sr_pg_1"
-
-session <- bow(url,user_agent = "For Educational Purposes")
-
-amazon <- read_html(url)
-
-
-slides2 <- scrape(session) %>%
-  html_nodes("span.a-text-normal") %>%
-  html_text
-slides2
-slides44 <- slides[1:44]
-slides44
-
-slides_prices2 <- scrape(session) %>%
-  html_nodes("span.a-price-whole") %>%
-  html_text
-slides_prices2
-```
+Product3
 
 ```{r}
-slides_Ratings2 <- scrape(session) %>%
-  html_nodes("i.a-icon.a-icon-star-small.a-star-small-4.aok-align-bottom") %>%
-  html_text
-slides_Ratings2
 
-slides_noReviews2 <- scrape(session) %>%
-  html_nodes("span.a-size-base.s-underline-text") %>%
-  html_text
-slides_noReviews2
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+library(selectr)
+
+product1 = data.frame()
+scrapedCategory <- "Dog/Cat Accessories"
+scrapeNodes <- function(session, selector) {
+  session %>%
+    scrape() %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+
+scrapeProductDetails <- function(link) {
+  session <- bow(link, user_agent = "For Educational Purpose")
+  
+  scrapedprodName <- scrapeNodes(session, "h1.a-size-large.a-text-ellipsis")
+  scrapedReviewer <- scrapeNodes(session, "span.a-profile-name")[1:9]
+  scrapedReview <- scrapeNodes(session, "span.a-size-base.review-text.review-text-content")[1:9]
+  scrapedDate <- scrapeNodes(session, "span.a-size-base.a-color-secondary.review-date")[1:9]
+  scrapedprodRating <- scrapeNodes(session, "span.a-icon-alt")[1:9]
+  
+  product <- data.frame(category = scrapedCategory,
+                        name = rep(scrapedprodName, each = 9),
+                        reviewer = scrapedReviewer,
+                        review = scrapedReview,
+                        date = scrapedDate,
+                        ratings = scrapedprodRating)
+  
+  return(product)
+}
+
+link1 <- "https://www.amazon.com.au/YIXUND-Hamster-Accessories-Chinchillas-Different/product-reviews/B0BYMKK4H4/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews"
+product1 <- scrapeProductDetails(link1)
+
+link2 <- "https://www.amazon.com.au/YIXUND-Hamster-Accessories-Chinchillas-Different/product-reviews/B0BYMKK4H4/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=2"
+product2 <- scrapeProductDetails(link2)
+
+link3 <- "https://www.amazon.com.au/YIXUND-Hamster-Accessories-Chinchillas-Different/product-reviews/B0BYMKK4H4/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=3"
+product3 <- scrapeProductDetails(link3)
+
+product_all3 <- rbind(product1, product2, product3)
+
+View(product_all3)
 ```
 
+
+Product4
+
+```{r}
+
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+library(selectr)
+
+product1 = data.frame()
+scrapedCategory <- "Dog/Cat Accessories"
+scrapeNodes <- function(session, selector) {
+  session %>%
+    scrape() %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+
+scrapeProductDetails <- function(link) {
+  session <- bow(link, user_agent = "For Educational Purpose")
+  
+  scrapedprodName <- scrapeNodes(session, "h1.a-size-large.a-text-ellipsis")
+  scrapedReviewer <- scrapeNodes(session, "span.a-profile-name")[1:9]
+  scrapedReview <- scrapeNodes(session, "span.a-size-base.review-text.review-text-content")[1:9]
+  scrapedDate <- scrapeNodes(session, "span.a-size-base.a-color-secondary.review-date")[1:9]
+  scrapedprodRating <- scrapeNodes(session, "span.a-icon-alt")[1:9]
+  
+  product <- data.frame(category = scrapedCategory,
+                        name = rep(scrapedprodName, each = 9),
+                        reviewer = scrapedReviewer,
+                        review = scrapedReview,
+                        date = scrapedDate,
+                        ratings = scrapedprodRating)
+  
+  return(product)
+}
+
+link1 <- "https://www.amazon.com.au/Mandalorian-Ceramic-Dishwasher-Storage-Container/product-reviews/B096BKW99R/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews"
+product1 <- scrapeProductDetails(link1)
+
+link2 <- "https://www.amazon.com.au/Mandalorian-Ceramic-Dishwasher-Storage-Container/product-reviews/B096BKW99R/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=2"
+product2 <- scrapeProductDetails(link2)
+
+link3 <- "https://www.amazon.com.au/Mandalorian-Ceramic-Dishwasher-Storage-Container/product-reviews/B096BKW99R/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=3"
+product3 <- scrapeProductDetails(link3)
+
+product_all4 <- rbind(product1, product2, product3)
+
+View(product_all4)
+```
+
+Product5
+
+```{r}
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+library(selectr)
+
+product1 = data.frame()
+scrapedCategory <- "Dog/Cat Accessories"
+scrapeNodes <- function(session, selector) {
+  session %>%
+    scrape() %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+
+scrapeProductDetails <- function(link) {
+  session <- bow(link, user_agent = "For Educational Purpose")
+  
+  scrapedprodName <- scrapeNodes(session, "h1.a-size-large.a-text-ellipsis")
+  scrapedReviewer <- scrapeNodes(session, "span.a-profile-name")[1:9]
+  scrapedReview <- scrapeNodes(session, "span.a-size-base.review-text.review-text-content")[1:9]
+  scrapedDate <- scrapeNodes(session, "span.a-size-base.a-color-secondary.review-date")[1:9]
+  scrapedprodRating <- scrapeNodes(session, "span.a-icon-alt")[1:9]
+  
+  product <- data.frame(category = scrapedCategory,
+                        name = rep(scrapedprodName, each = 9),
+                        reviewer = scrapedReviewer,
+                        review = scrapedReview,
+                        date = scrapedDate,
+                        ratings = scrapedprodRating)
+  
+  return(product)
+}
+
+link1 <- "https://www.amazon.com.au/Slow-Food-Random-Color-SOY-3173/product-reviews/B0BDVXPN6R/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews"
+product1 <- scrapeProductDetails(link1)
+
+link2 <- "https://www.amazon.com.au/Slow-Food-Random-Color-SOY-3173/product-reviews/B0BDVXPN6R/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=2"
+product2 <- scrapeProductDetails(link2)
+
+link3 <- "https://www.amazon.com.au/Slow-Food-Random-Color-SOY-3173/product-reviews/B0BDVXPN6R/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=3"
+product3 <- scrapeProductDetails(link3)
+
+product_all5 <- rbind(product1, product2, product3)
+
+View(product_all5)
+```
+
+Product6
+
+```{r}
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+library(selectr)
+
+product1 = data.frame()
+scrapedCategory <- "Dog/Cat Accessories"
+scrapeNodes <- function(session, selector) {
+  session %>%
+    scrape() %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+
+scrapeProductDetails <- function(link) {
+  session <- bow(link, user_agent = "For Educational Purpose")
+  
+  scrapedprodName <- scrapeNodes(session, "h1.a-size-large.a-text-ellipsis")
+  scrapedReviewer <- scrapeNodes(session, "span.a-profile-name")[1:9]
+  scrapedReview <- scrapeNodes(session, "span.a-size-base.review-text.review-text-content")[1:9]
+  scrapedDate <- scrapeNodes(session, "span.a-size-base.a-color-secondary.review-date")[1:9]
+  scrapedprodRating <- scrapeNodes(session, "span.a-icon-alt")[1:9]
+  
+  product <- data.frame(category = scrapedCategory,
+                        name = rep(scrapedprodName, each = 9),
+                        reviewer = scrapedReviewer,
+                        review = scrapedReview,
+                        date = scrapedDate,
+                        ratings = scrapedprodRating)
+  
+  return(product)
+}
+
+link1 <- "https://www.amazon.com.au/Piece-Non-Slip-Silicone-Feeding-Waterproof/product-reviews/B0BS3QMPQL/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews"
+product1 <- scrapeProductDetails(link1)
+
+link2 <- "https://www.amazon.com.au/Piece-Non-Slip-Silicone-Feeding-Waterproof/product-reviews/B0BS3QMPQL/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=2"
+product2 <- scrapeProductDetails(link2)
+
+link3 <- "https://www.amazon.com.au/Piece-Non-Slip-Silicone-Feeding-Waterproof/product-reviews/B0BS3QMPQL/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=3"
+product3 <- scrapeProductDetails(link3)
+
+product_all6 <- rbind(product1, product2, product3)
+
+View(product_all6)
+```
+
+Product7
+
+```{r}
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+library(selectr)
+
+product1 = data.frame()
+scrapedCategory <- "Dog/Cat Accessories"
+scrapeNodes <- function(session, selector) {
+  session %>%
+    scrape() %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+
+scrapeProductDetails <- function(link) {
+  session <- bow(link, user_agent = "For Educational Purpose")
+  
+  scrapedprodName <- scrapeNodes(session, "h1.a-size-large.a-text-ellipsis")
+  scrapedReviewer <- scrapeNodes(session, "span.a-profile-name")[1:9]
+  scrapedReview <- scrapeNodes(session, "span.a-size-base.review-text.review-text-content")[1:9]
+  scrapedDate <- scrapeNodes(session, "span.a-size-base.a-color-secondary.review-date")[1:9]
+  scrapedprodRating <- scrapeNodes(session, "span.a-icon-alt")[1:9]
+  
+  product <- data.frame(category = scrapedCategory,
+                        name = rep(scrapedprodName, each = 9),
+                        reviewer = scrapedReviewer,
+                        review = scrapedReview,
+                        date = scrapedDate,
+                        ratings = scrapedprodRating)
+  
+  return(product)
+}
+
+link1 <- "https://www.amazon.com.au/OHMO-Pack-Universal-Dark-Blue/product-reviews/B0B5D4K8JG/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews"
+product1 <- scrapeProductDetails(link1)
+
+link2 <- "https://www.amazon.com.au/OHMO-Pack-Universal-Dark-Blue/product-reviews/B0B5D4K8JG/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=2"
+product2 <- scrapeProductDetails(link2)
+
+link3 <- "https://www.amazon.com.au/OHMO-Pack-Universal-Dark-Blue/product-reviews/B0B5D4K8JG/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=3"
+product3 <- scrapeProductDetails(link3)
+
+product_all7 <- rbind(product1, product2, product3)
+
+View(product_all7)
+```
+
+Product8
+
+```{r}
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+library(selectr)
+
+product1 = data.frame()
+scrapedCategory <- "Rabbit/Hamster Accessories"
+scrapeNodes <- function(session, selector) {
+  session %>%
+    scrape() %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+
+scrapeProductDetails <- function(link) {
+  session <- bow(link, user_agent = "For Educational Purpose")
+  
+  scrapedprodName <- scrapeNodes(session, "h1.a-size-large.a-text-ellipsis")
+  scrapedReviewer <- scrapeNodes(session, "span.a-profile-name")[1:9]
+  scrapedReview <- scrapeNodes(session, "span.a-size-base.review-text.review-text-content")[1:9]
+  scrapedDate <- scrapeNodes(session, "span.a-size-base.a-color-secondary.review-date")[1:9]
+  scrapedprodRating <- scrapeNodes(session, "span.a-icon-alt")[1:9]
+  
+  product <- data.frame(category = scrapedCategory,
+                        name = rep(scrapedprodName, each = 9),
+                        reviewer = scrapedReviewer,
+                        review = scrapedReview,
+                        date = scrapedDate,
+                        ratings = scrapedprodRating)
+  
+  return(product)
+}
+
+link1 <- "https://www.amazon.com.au/19352-Rabbit-Activity-Tunnel-Assorted/product-reviews/B003GPF9CU/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews"
+product1 <- scrapeProductDetails(link1)
+
+link2 <- "https://www.amazon.com.au/19352-Rabbit-Activity-Tunnel-Assorted/product-reviews/B003GPF9CU/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=2"
+product2 <- scrapeProductDetails(link2)
+
+link3 <- "https://www.amazon.com.au/19352-Rabbit-Activity-Tunnel-Assorted/product-reviews/B003GPF9CU/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=3"
+product3 <- scrapeProductDetails(link3)
+
+product_all8 <- rbind(product1, product2, product3)
+
+View(product_all8)
+```
+
+
+Product9
+
+```{r}
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+library(selectr)
+
+product1 = data.frame()
+scrapedCategory <- "Rabbit/Hamster Accessories"
+scrapeNodes <- function(session, selector) {
+  session %>%
+    scrape() %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+
+scrapeProductDetails <- function(link) {
+  session <- bow(link, user_agent = "For Educational Purpose")
+  
+  scrapedprodName <- scrapeNodes(session, "h1.a-size-large.a-text-ellipsis")
+  scrapedReviewer <- scrapeNodes(session, "span.a-profile-name")[1:9]
+  scrapedReview <- scrapeNodes(session, "span.a-size-base.review-text.review-text-content")[1:9]
+  scrapedDate <- scrapeNodes(session, "span.a-size-base.a-color-secondary.review-date")[1:9]
+  scrapedprodRating <- scrapeNodes(session, "span.a-icon-alt")[1:9]
+  
+  product <- data.frame(category = scrapedCategory,
+                        name = rep(scrapedprodName, each = 9),
+                        reviewer = scrapedReviewer,
+                        review = scrapedReview,
+                        date = scrapedDate,
+                        ratings = scrapedprodRating)
+  
+  return(product)
+}
+
+link1 <- "https://www.amazon.com.au/BWOGUE-Collapsible-Removable-Hideout-Kittens/product-reviews/B09MJ5JB3Z/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews"
+product1 <- scrapeProductDetails(link1)
+
+link2 <- "https://www.amazon.com.au/BWOGUE-Collapsible-Removable-Hideout-Kittens/product-reviews/B09MJ5JB3Z/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=2"
+product2 <- scrapeProductDetails(link2)
+
+link3 <- "https://www.amazon.com.au/BWOGUE-Collapsible-Removable-Hideout-Kittens/product-reviews/B09MJ5JB3Z/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=3"
+product3 <- scrapeProductDetails(link3)
+
+product_all9 <- rbind(product1, product2, product3)
+
+View(product_all9)
+```
+
+
+Product 10
+
+```{r}
+
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+library(selectr)
+
+product1 = data.frame()
+scrapedCategory <- "Rabbit/Hamster Accessories"
+scrapeNodes <- function(session, selector) {
+  session %>%
+    scrape() %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+
+scrapeProductDetails <- function(link) {
+  session <- bow(link, user_agent = "For Educational Purpose")
+  
+  scrapedprodName <- scrapeNodes(session, "h1.a-size-large.a-text-ellipsis")
+  scrapedReviewer <- scrapeNodes(session, "span.a-profile-name")[1:9]
+  scrapedReview <- scrapeNodes(session, "span.a-size-base.review-text.review-text-content")[1:9]
+  scrapedDate <- scrapeNodes(session, "span.a-size-base.a-color-secondary.review-date")[1:9]
+  scrapedprodRating <- scrapeNodes(session, "span.a-icon-alt")[1:9]
+  
+  product <- data.frame(category = scrapedCategory,
+                        name = rep(scrapedprodName, each = 9),
+                        reviewer = scrapedReviewer,
+                        review = scrapedReview,
+                        date = scrapedDate,
+                        ratings = scrapedprodRating)
+  
+  return(product)
+}
+
+link1 <- "https://www.amazon.com.au/Ferplast-Wooden-Small-Animal-House/product-reviews/B00BEF2QZC/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews"
+product1 <- scrapeProductDetails(link1)
+
+link2 <- "https://www.amazon.com.au/Ferplast-Wooden-Small-Animal-House/product-reviews/B00BEF2QZC/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=2"
+product2 <- scrapeProductDetails(link2)
+
+link3 <- "https://www.amazon.com.au/Ferplast-Wooden-Small-Animal-House/product-reviews/B00BEF2QZC/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews=3"
+product3 <- scrapeProductDetails(link3)
+
+product_all10 <- rbind(product1, product2, product3)
+
+View(product_all10)
+
+
+
+```
+
+All Reviews
+
+```{r}
+
+all_reviews <- rbind(product_all1, product_all2, product_all3, product_all4, product_all5, product_all6, product_all7, product_all8, product_all9, product_all10)
+View(all_reviews)
+
+library(usethis)
+```
