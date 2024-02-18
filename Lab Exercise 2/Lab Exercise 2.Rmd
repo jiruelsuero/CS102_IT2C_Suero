@@ -1,0 +1,475 @@
+---
+title: "Lab Exercise 2"
+output: html_document
+date: "2024-02-18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Scraping 50 products
+```{r}
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+library(selectr)
+
+scrapeAmazonReviews <- function(product_name, url_stub, pages) {
+  product_df <- data.frame()
+
+  for (page in pages) {
+    link <- paste0("https://www.amazon.com.au/",url_stub,"/ref=cm_cr_arp_d_paging_btm_next_", page, "?ie=UTF8&reviewerType=all_reviews&pageNumber=", page)
+    session <- bow(link, user_agent = "Educational Purpose")
+
+    scrapeNodes <- function(selector) {
+      scrape(session) %>%
+        html_nodes(selector) %>%
+        html_text(trim = TRUE)
+    }
+
+    scrapedTitle <- scrapeNodes("span.a-size-base.review-title.a-color-base.review-title-content.a-text-bold")[1:10]
+    scrapedReviewer <- scrapeNodes("span.a-profile-name")[1:10]
+    scrapedReview <- scrapeNodes("span.a-size-base.review-text.review-text-content")[1:10]
+    scrapedDate <- scrapeNodes("span.a-size-base.a-color-secondary.review-date")[1:10]
+    scrapedRating <- scrapeNodes("span.a-icon-alt")[1:10]
+    scrapedType <- scrapeNodes("span.a-size-mini.a-color-state.a-text-bold")[1:10]
+
+    product_df <- rbind(product_df, data.frame(
+      prod_name = product_name,
+      title = scrapedTitle,
+      reviewer = scrapedReviewer,
+      review = scrapedReview,
+      date = scrapedDate,
+      ratings = scrapedRating,
+      type_of_purchase = scrapedType
+    ))
+
+    Sys.sleep(3)
+  }
+
+  return(product_df)
+}
+```
+
+1-10 Product
+
+```{r}
+    
+product1 <- scrapeAmazonReviews(
+  "Skechers Men's Diameter Zinroy Loafers",
+  "Skechers Men's Diameter Zinroy Loafers/product-reviews/B00JA7W4JY",
+  3:7
+)
+
+
+
+product2 <- scrapeAmazonReviews(  
+  "Merrell Men's Moab 3 GTX Hiking Shoe",
+  "Merrell Men's Moab 3 GTX Hiking Shoe/product-reviews/B09ZFBD23K",
+  6:10
+)
+
+
+product3 <- scrapeAmazonReviews(
+  "Wrangler-ZM6ADMD-Cargo-Shorts-Medium",
+  "Wrangler-ZM6ADMD-Cargo-Shorts-Medium/product-reviews/B07YP9L6G4",
+  3:7
+)
+
+
+product4 <- scrapeAmazonReviews(
+  "PUMA Women's Carina L Sneaker",
+  "PUMA Women's Carina L Sneaker/product-reviews/B076H1H4VX",
+  3:7
+)
+
+
+product5 <- scrapeAmazonReviews(
+  "Reebok Men's Work N Cushion 4.0 Walking Shoe",
+  "Reebok Men's Work N Cushion 4.0 Walking Shoe/product-reviews/B097CCV7HY",
+  3:7
+)
+
+
+product6 <- scrapeAmazonReviews(
+  "Puma-Womens-Low-Top-Sneakers",
+  "Puma-Womens-Low-Top-Sneakers-White/product-reviews/B07DCBLVNJ",
+  3:7
+)
+
+
+product7 <- scrapeAmazonReviews(
+  "Nike-Park-Short-Sport-Shorts",
+  "Nike-Park-Short-Sport-Shorts/product-reviews/B07W6YJ9CB",
+  3:7
+)
+
+
+product8 <- scrapeAmazonReviews(
+  "adidas-HB0575-ENT22-Shorts-black",
+  "adidas-HB0575-ENT22-Shorts-black/product-reviews/B09NDQ99Y2",
+  3:7
+)
+
+product9 <- scrapeAmazonReviews(
+  "PUMA-Unisex-Rebound-Sneaker-White",
+  "PUMA-Unisex-Rebound-Sneaker-White/product-reviews/B0BLCNXKHK",
+  3:7
+)
+
+product10 <- scrapeAmazonReviews(
+  "PUMA-Unisex-Leader-Training-Bunting",
+  "PUMA-Unisex-Leader-Training-Bunting/product-reviews/B07DC1WX5C",
+  6:10
+)
+
+
+```
+
+11-20 Products
+
+```{r}
+    
+product11 <- scrapeAmazonReviews(
+  "NIKE-Tanjun-Walking-White-Barely-Volt-Black",
+  "NIKE-Tanjun-Walking-White-Barely-Volt-Black/product-reviews/B0983L11ZS",
+  3:7
+)
+
+
+
+product12 <- scrapeAmazonReviews(
+  "NIKE-Downshifter-White-DK-Grey-Pure-Platinum",
+  "NIKE-Downshifter-White-DK-Grey-Pure-Platinum/product-reviews/B0B56YYS3T",
+  3:7
+)
+
+
+product13 <- scrapeAmazonReviews(
+  "NIKE-Alpha-Trainer-Sneaker-Black",
+  "NIKE-Alpha-Trainer-Sneaker-Black/product-reviews/B0B6FTJZK3",
+  3:7
+)
+
+product14 <- scrapeAmazonReviews(
+  "NIKE-Mens-Sneaker-White-Black-White",
+  "NIKE-Mens-Sneaker-White-Black-White/product-reviews/B08SC943QM",
+  3:7
+)
+
+
+product15 <- scrapeAmazonReviews(
+  "NIKE-Revolution-Sneaker-Anthracite-Purple-Blackened",
+  "NIKE-Revolution-Sneaker-Anthracite-Purple-Blackened/product-reviews/B0B6G9GSMZ",
+  3:7
+)
+
+
+product16 <- scrapeAmazonReviews(
+  "NIKE-Track-White-Midnight-Silver",
+  "NIKE-Track-White-Midnight-Silver/product-reviews/B09CT435RL",
+  3:7
+)
+
+
+product17 <- scrapeAmazonReviews(
+  "NIKE-Court-Vision-Nature-Trainers",
+  "NIKE-Court-Vision-Nature-Trainers/product-reviews/B09NMGL887",
+  3:7
+)
+
+product18 <- scrapeAmazonReviews(
+  "Nike-Venture-Runner-Sneaker-White-Blac",
+  "Nike-Venture-Runner-Sneaker-White-Black/product-reviews/B082PJNPR6",
+  3:7
+)
+
+
+product19 <- scrapeAmazonReviews(
+  "Vans-Low-Top-Sneakers-Suede-Canvas",
+  "Vans-Low-Top-Sneakers-Suede-Canvas/product-reviews/B06XHNV236",
+  4:8
+)
+
+
+product20 <- scrapeAmazonReviews(
+  "NIKE Men's Court Royale 2 Nn Sneakers",
+  "NIKE-Court-Royale-Sneakers-White/product-reviews/B09XXYR3TS",
+  3:7
+)
+
+```
+
+Scraping 21-30
+
+```{r}
+
+product21 <- scrapeAmazonReviews(
+  "adidas-Running-Azmaso-Casbla-Tinley",
+  "adidas-Running-Azmaso-Casbla-Tinley/product-reviews/B09HZ7QK2V",
+  3:7
+)
+
+```
+
+
+```{r}
+product22 <- scrapeAmazonReviews(
+  "NIKE-Revolution-Sneaker-Platinum-Crimson-Wolf",
+  "NIKE-Revolution-Sneaker-Platinum-Crimson-Wolf/product-reviews/B0BNJHPBPF",
+  3:7
+)
+
+
+```
+
+```{r}
+
+product23 <- scrapeAmazonReviews(
+  "Vans-Range-Sneaker-Suede-Canvas",
+  "Vans-Range-Sneaker-Suede-Canvas/product-reviews/B0949M37W8",
+  3:7
+)
+
+
+```
+
+
+```{r}
+product24 <- scrapeAmazonReviews(
+  "NIKE-Revolution-Sneaker-Platinum-Crimson-Wolf",
+  "NIKE-Revolution-Sneaker-Platinum-Crimson-Wolf/product-reviews/B0BNJHPBPF",
+  3:7
+)
+```
+
+
+
+```{r}
+product25 <- scrapeAmazonReviews(
+  "Mevoit-Breathable-Wear-Resistant-Comfortable-Basketball",
+  "Mevoit-Breathable-Wear-Resistant-Comfortable-Basketball/product-reviews/B0BJCRBSWG",
+  3:7
+)
+
+
+```
+
+```{r}
+product26 <- scrapeAmazonReviews(
+  "adidas-HB0575-ENT22-Shorts-black",
+  "adidas-HB0575-ENT22-Shorts-black/product-reviews/B09NDQ99Y2",
+  3:7
+)
+
+
+```
+```{r}
+product27 <- scrapeAmazonReviews(
+  "Amazon-Essentials-Straight-fit-Stretch-5-Pocket",
+  "Amazon-Essentials-Straight-fit-Stretch-5-Pocket/product-reviews/B08JDX3B1Q",
+  3:7
+)
+
+```
+
+```{r}
+product28 <- scrapeAmazonReviews(
+  "Vans-Range-Sneaker-Suede-Canvas",
+  "Vans-Range-Sneaker-Suede-Canvas/product-reviews/B0949M37W8",
+  3:7
+)
+
+```
+
+```{r}
+product29 <- scrapeAmazonReviews(
+  "adidas-Running-Azmaso-Casbla-Tinley",
+  "adidas-Running-Azmaso-Casbla-Tinley/product-reviews/B09HZ7QK2V",
+  3:7
+)
+
+```
+
+31-40 Products
+
+```{r}
+product30 <- scrapeAmazonReviews(
+  "adidas-Running-Ftwbla-Escmej-Griuno",
+  "adidas-Running-Ftwbla-Escmej-Griuno/product-reviews/B0BQRB3DWZ",
+  3:7
+)
+
+
+```
+
+31-40 Products
+
+```{r}
+product31 <- scrapeAmazonReviews(
+  "adidas-Running-Ftwbla-Escmej-Griuno",
+  "adidas-Running-Ftwbla-Escmej-Griuno/product-reviews/B0BQRB3DWZ",
+  3:7
+)
+
+
+product32 <- scrapeAmazonReviews(
+  "PUMA-704943-teamRISE-Short-Jr",
+  "PUMA-704943-teamRISE-Short-Jr/product-reviews/B08ZLS79QJ",
+  3:7
+)
+
+
+product33 <- scrapeAmazonReviews(
+  "Under-Armour-Challenger-Shorts-Black",
+  "Under-Armour-Challenger-Shorts-Black/product-reviews/B093MHLY5R",
+  3:7
+)
+
+
+product34 <- scrapeAmazonReviews(
+  "Amazon-Essentials-Classic-Fit-Cargo-Short",
+  "Amazon-Essentials-Classic-Fit-Cargo-Short/product-reviews/B01JQTP5G4",
+  3:7
+)
+
+
+product35 <- scrapeAmazonReviews(
+  "adidas-Mens-ENT22-Shorts-Black",
+  "adidas-Mens-ENT22-Shorts-Black/product-reviews/B09NDNZBVC",
+  3:7
+)
+
+
+
+product36 <- scrapeAmazonReviews(
+  "Champion-Pockets-Granite-Heather-4X-Large",
+  "Champion-Pockets-Granite-Heather-4X-Large/product-reviews/B01F2B0YXE",
+  3:7
+)
+
+
+
+product37 <- scrapeAmazonReviews(
+  "Amazon-Essentials-2-Pack-Loose-Fit-Performance",
+  "Amazon-Essentials-2-Pack-Loose-Fit-Performance/product-reviews/B0728KK8VK",
+  3:7
+)
+
+
+
+product38 <- scrapeAmazonReviews(
+  "Amazon-Essentials-Classic-Fit-Short-Blue",
+  "Amazon-Essentials-Classic-Fit-Short-Blue/product-reviews/B06XWM86PP",
+  3:7
+)
+
+
+
+product39 <- scrapeAmazonReviews(
+  "ANTONIO-ROSSI-12-Pack-Fitted-Hipsters",
+  "ANTONIO-ROSSI-12-Pack-Fitted-Hipsters/product-reviews/B084PRBVFZ",
+  3:7
+)
+
+
+product40 <- scrapeAmazonReviews(
+  "Canterbury-Zealand-Thermoreg-Leggings-3X-Large",
+  "Canterbury-Zealand-Thermoreg-Leggings-3X-Large/product-reviews/B01HEOMNKO",
+  3:7
+)
+
+```
+
+41-50 Products
+
+```{r}
+product41 <- scrapeAmazonReviews(
+  "Wrangler-Authentics-Premium-Cargo-Anthracite",
+  "Wrangler-Authentics-Premium-Cargo-Anthracite/product-reviews/B00XKYLJA8",
+  3:7
+)
+
+
+product42 <- scrapeAmazonReviews(
+  "Amazon-Essentials-Slim-fit-Short-Brown",
+  "Amazon-Essentials-Slim-fit-Short-Brown/product-reviews/B07F27X4GD",
+  3:7
+)
+
+
+product43 <- scrapeAmazonReviews(
+  "Amazon-Essentials-Classic-Fit-Cargo-Short",
+  "Amazon-Essentials-Classic-Fit-Cargo-Short/product-reviews/B01JQTRBZC",
+  3:7
+)
+
+
+product44 <- scrapeAmazonReviews(
+  "Wrangler-Authentics-Premium-Cargo-Anthracite",
+  "Wrangler-Authentics-Premium-Cargo-Anthracite/product-reviews/B00XKYLJA8",
+  3:7
+)
+
+
+product45 <- scrapeAmazonReviews(
+  "Storelli-BodyShield-Goalkeeper-Slider-Medium",
+  "Storelli-BodyShield-Goalkeeper-Slider-Medium/product-reviews/B07R9FTCV2",
+  3:7
+)
+
+
+product46 <- scrapeAmazonReviews(
+  "Amazon-Essentials-Drawstring-Short-XX-Large",
+  "Amazon-Essentials-Drawstring-Short-XX-Large/product-reviews/B01JQTCQQ6",
+  3:7
+)
+
+
+product47 <- scrapeAmazonReviews(
+  "Shorts-Brief-Training-Black-White",
+  "Shorts-Brief-Training-Black-White/product-reviews/B0781VC1QT",
+  3:7
+)
+
+
+
+
+product48 <- scrapeAmazonReviews(
+  "Under-Armour-Graphic-Short-Black",
+  "Under-Armour-Graphic-Short-Black/product-reviews/B0728BNL9X",
+  3:7
+)
+
+
+product49 <- scrapeAmazonReviews(
+  "Amazon-Essentials-Classic-Fit-Short-Washed",
+  "Amazon-Essentials-Classic-Fit-Short-Washed/product-reviews/B06XW35VD1",
+  3:7
+)
+
+product50 <- scrapeAmazonReviews(
+  "PUMA-Shorts-Training-Black-White",
+  "PUMA-Shorts-Training-Black-White/product-reviews/B0781Z5QMD",
+  3:7
+)
+
+```
+
+
+```{r}
+
+allProds = data.frame();
+
+allProds <- rbind(allProds, product1, product2, product3, product4, product5, product6, product7, product8, product9, product10,
+                product11, product12, product13, product14, product15, product16, product17, product18, product19, product20,
+                product21, product22, product23, product24, product25, product26, product27, product28, product29, product30,
+                product31, product32, product33, product34, product35, product36, product37, product38, product39, product40,
+                product41, product42, product43, product44, product45, product46, product47, product48, product49, product50)
+
+#View(allProds)
+
+```
