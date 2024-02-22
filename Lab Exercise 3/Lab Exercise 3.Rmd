@@ -1,6 +1,8 @@
 ---
 title: "Lab Exercise 3"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 date: "2024-02-22"
 ---
 
@@ -53,18 +55,16 @@ library(RMySQL)
 
 #Making connections 
 connection <- dbConnect(RMySQL::MySQL(),
-                        dsn="MariaDB-connection",
-                        Server = "localhost",
-                        dbname = "Movies", 
-                        user = "root", 
-                        password = "") 
+                        dsn="MariaDB-connection",Server = "localhost",
+                        dbname = "2c_suero", 
+                        user = "root", password = "") 
 
 
 
 
 ```
 
-# listingfields and table
+# listing fields and table
 
 ```{r}
 dbListTables(connection)
@@ -77,7 +77,7 @@ dbListFields(connection,"reviews")
 
 
 ```{r}
-reviewData <- dbGetQuery(connection, "SELECT * FROM movies.reviews")
+reviewData <- dbGetQuery(connection, "SELECT * FROM 2c_suero.reviews")
 
 glimpse(reviewData)
 
@@ -86,12 +86,12 @@ glimpse(reviewData)
 ```
 
 
-# Replace every single quote in the review_content and review_title columns with two single quotes ('') by using the gsub function. 
-# This will guarantee that the SQL query appropriately escapes any single quotes included in the content.
+# Using the gsub function, replace each quotation in the review_content and review_title columns with two single quotes (''). 
+# This ensures that the SQL query properly escapes any single quotes in the text.
 
 ```{r}
 for (i in 1:nrow(reviews)) {
-  query <- paste0("INSERT INTO reviews (movie_title, reviewer_name, review_date, review_rating, review_content, review_title) 
+  query <- paste0("INSERT INTO reviews (Movie_Title, Reviewer, Reviewer_Date, Rating, Review, Review_Title) 
                   VALUES ('", reviews$movieTitle[i],"','", reviews$reviewerName[i], "','", reviews$reviewDate[i],"','", reviews$reviewRating[i], "','",
                   gsub("'","''", reviews$reviewContent[i]), "','", gsub("'","''", reviews$reviewTitle[i]), "')")
   
@@ -104,20 +104,20 @@ for (i in 1:nrow(reviews)) {
 
 ```
 
-### READ AND VIEW INSERTED DATA
+#Reading and viewing of inserted data
 
 
 ```{r}
-review_data <- dbGetQuery(connection, "SELECT * FROM movies.reviews")
+review_data <- dbGetQuery(connection, "SELECT * FROM 2c_suero.reviews")
 
 
 
-review_data[,c(2:7)]
+review_data[c(1:10),c(2:7)]
 
 #View(review_data[,c(2:7)])
 
 # Export to csv
-write.csv(review_data[,c(2:7)], "review_data.csv")
+write.csv(review_data[c(1:10),c(2:7)], "review_data.csv")
 
 
 
