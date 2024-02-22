@@ -1,0 +1,127 @@
+---
+title: "Lab Exercise 3"
+output: html_document
+date: "2024-02-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+
+
+reviews <- data.frame()
+
+link <- "https://www.imdb.com/title/tt0060196/reviews?ref_=tt_urv"
+session <- bow(link, user_agent = "Educational Purpose")
+
+scrapeNodes <- function(selector) {
+  scrape(session) %>%
+    html_nodes(selector) %>%
+    html_text(trim = TRUE)
+}
+
+titleMovie <- scrapeNodes("a.subnav_heading")
+reviewer <- scrapeNodes("span.display-name-link")[1:10]
+scrapedDate <- scrapeNodes("span.review-date")[1:10]
+scrapedRating <- scrapeNodes("span.rating-other-user-rating")[1:10]
+scrapedReview <- scrapeNodes("div.text.show-more__control")[1:10]
+scrapedTitleReview <- scrapeNodes("a.title")[1:10]
+
+reviews <- rbind(reviews, data.frame(
+  movieTitle = rep(titleMovie, 10),
+  reviewerName = reviewer,
+  reviewDate = scrapedDate,
+  reviewRating = scrapedRating,
+  reviewContent = scrapedReview,
+  reviewTitle = scrapedTitleReview
+))
+
+reviews
+
+```
+
+
+```{r}
+library(dplyr,dbplyr)
+library(RMySQL)
+
+#Making connections 
+connection <- dbConnect(RMySQL::MySQL(),
+                        dsn="MariaDB-connection",
+                        Server = "localhost",
+                        dbname = "Movies", 
+                        user = "root", 
+                        password = "") 
+
+
+
+
+```
+
+# listingfields and table
+
+```{r}
+dbListTables(connection)
+dbListFields(connection,"reviews")
+
+```
+
+
+# Reading of data from database
+
+
+```{r}
+reviewData <- dbGetQuery(connection, "SELECT * FROM movies.reviews")
+
+glimpse(reviewData)
+
+
+
+```
+
+
+# Replace every single quote in the review_content and review_title columns with two single quotes ('') by using the gsub function. 
+# This will guarantee that the SQL query appropriately escapes any single quotes included in the content.
+
+```{r}
+for (i in 1:nrow(reviews)) {
+  query <- paste0("INSERT INTO reviews (movie_title, reviewer_name, review_date, review_rating, review_content, review_title) 
+                  VALUES ('", reviews$movieTitle[i],"','", reviews$reviewerName[i], "','", reviews$reviewDate[i],"','", reviews$reviewRating[i], "','",
+                  gsub("'","''", reviews$reviewContent[i]), "','", gsub("'","''", reviews$reviewTitle[i]), "')")
+  
+  # execute query
+  query_result <- dbSendQuery(connection, query)
+  
+  # clear result after executing query
+  dbClearResult(query_result)
+}
+
+```
+
+### READ AND VIEW INSERTED DATA
+
+
+```{r}
+review_data <- dbGetQuery(connection, "SELECT * FROM movies.reviews")
+
+
+
+review_data[,c(2:7)]
+
+#View(review_data[,c(2:7)])
+
+# Export to csv
+write.csv(review_data[,c(2:7)], "review_data.csv")
+
+
+
+# Close the database connection
+dbDisconnect(connection)
+
+```
