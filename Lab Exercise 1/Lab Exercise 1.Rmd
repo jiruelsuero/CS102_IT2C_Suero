@@ -1,13 +1,13 @@
 ---
 title: "Lab Exercise 1"
+author: "Jiruel A. Suero"
+date: "2024-03-08"
 output: html_document
-date: "2024-02-08"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
 Scraping for Dog and Cat Food/Accessories 
 
 ```{r}
@@ -787,5 +787,67 @@ All Reviews
 all_reviews <- rbind(product_all1, product_all2, product_all3, product_all4, product_all5, product_all6, product_all7, product_all8, product_all9, product_all10)
 all_reviews
 
+
 library(usethis)
+```
+
+
+
+use RMySQL
+
+```{r}
+library(DBI)
+library(odbc)
+library(RMySQL)
+library(dplyr,dbplyr)
+connection <- dbConnect(RMySQL::MySQL(),
+                        dsn="MariaDB-connection",
+                        Server = "localhost",
+                        dbname = "suero_2c", 
+                        user = "root", 
+                        password = "") 
+
+```
+
+```{r}
+
+#install.packages("readr")
+library(readr)
+
+all_reviews <- read.csv("allReviews.csv")
+tail(all_reviews)
+
+acce <- read.csv("Accesories.csv")
+tail(acce)
+
+```
+
+#writing table into database
+
+```{r}
+
+dbWriteTable(connection, 'Lab1_Reviews', all_reviews, append = TRUE)
+dbWriteTable(connection, 'Lab1_Products', acce, append = TRUE)
+
+```
+
+#listing of tables and fields
+
+```{r}
+dbListTables(connection)
+dbListFields(connection,"Lab1_Reviews")
+dbListFields(connection,"Lab1_Products")
+```
+
+#reading of data
+
+```{r}
+
+review_data <- dbGetQuery(connection, "SELECT * FROM suero_2c.Lab1_Reviews")
+glimpse(review_data)
+
+
+review_data2 <- dbGetQuery(connection, "SELECT * FROM suero_2c.Lab1_Products")
+glimpse(review_data)
+
 ```
