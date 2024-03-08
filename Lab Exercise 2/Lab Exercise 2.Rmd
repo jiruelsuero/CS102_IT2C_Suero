@@ -1,7 +1,8 @@
 ---
 title: "Lab Exercise 2"
+author: "Jiruel A. Suero"
+date: "2024-03-08"
 output: html_document
-date: "2024-02-18"
 ---
 
 ```{r setup, include=FALSE}
@@ -471,5 +472,55 @@ allProds <- rbind(allProds, product1, product2, product3, product4, product5, pr
                 product41, product42, product43, product44, product45, product46, product47, product48, product49, product50)
 
 #View(allProds)
+
+```
+
+Inserting Dataframe to Database
+
+```{r}
+library(DBI)
+library(odbc)
+library(RMySQL)
+library(dplyr,dbplyr)
+connection <- dbConnect(RMySQL::MySQL(),
+                        dsn="MariaDB-connection",
+                        Server = "localhost",
+                        dbname = "suero_2c", 
+                        user = "root", 
+                        password = "") 
+
+```
+
+```{r}
+
+#install.packages("readr")
+library(readr)
+
+allProds <- read.csv("allProds.csv")
+tail(allProds)
+
+```
+
+# writing Table to Database
+
+```{r}
+
+dbWriteTable(connection, 'Lab2Products', allProds, append = TRUE)
+
+```
+
+#listing of tables
+
+```{r}
+dbListTables(connection)
+dbListFields(connection,"Lab2Products")
+```
+
+# Reading data from table
+
+```{r}
+
+review_data <- dbGetQuery(connection, "SELECT * FROM suero_2c.Lab2Products")
+glimpse(review_data)
 
 ```
