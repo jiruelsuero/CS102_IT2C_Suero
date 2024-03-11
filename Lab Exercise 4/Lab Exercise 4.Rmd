@@ -1,0 +1,139 @@
+---
+title: "Lab Exercise 4"
+author: "Jiruel A. Suero"
+date: "2024-03-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(stringr)
+library(httr)
+library(rvest)
+
+start <- proc.time()
+
+#initializing empty
+title <- author <- subject <- abstract <- meta <- vector("character")
+
+base_url <- 'https://arxiv.org/search/?query=%22Information+Extraction%22&searchtype=all&source=header&start='
+pages <- seq(from = 0, to = 100, by = 50)
+
+for(page in pages) {
+  
+  url <- paste0(base_url, page)
+
+  article_urls <- read_html(url) %>% 
+    html_nodes('p.list-title.is-inline-block') %>% 
+    html_nodes('a[href^="https://arxiv.org/abs"]') %>% 
+    html_attr('href')
+  
+  
+  #looping through all articles url
+  for(article_url in article_urls) {
+  
+    article_page <- read_html(article_url)
+
+    #Title
+    scrapedTitle <- article_page %>% html_nodes('h1.title.mathjax') %>% html_text(TRUE)
+    scrapedTitle <- gsub('Title:', '', scrapedTitle)
+    title <- c(title, scrapedTitle)
+    
+    #Author
+    scrapedAuthor <- article_page %>% html_nodes('div.authors') %>% html_text(TRUE)
+    scrapedAuthor <- gsub('Authors:','',scrapedAuthor)
+    author <- c(author, scrapedAuthor)
+    
+    #Subject
+    scrapedSubject <- article_page %>% html_nodes('span.primary-subject') %>% html_text(TRUE)
+    subject <- c(subject, scrapedSubject)
+    
+    #Abstract
+    scrapedAbstract <- article_page %>% html_nodes('blockquote.abstract.mathjax') %>% html_text(TRUE)
+    scrapedAbstract <- sub('Abstract:','',scrapedAbstract)
+    abstract <- c(abstract, scrapedAbstract)
+    
+    #Meta
+    scrapedMeta <- article_page %>% html_nodes('div.submission-history') %>% html_text(TRUE)
+    scrapedMeta <- gsub('\\s+', ' ',scrapedMeta)
+    scrapedMeta <- strsplit(scrapedMeta, '[v1]', fixed = T)
+    scrapedMeta <- scrapedMeta[[1]][2] %>% unlist %>% str_trim
+    meta <- c(meta, scrapedMeta)
+    
+    
+    cat("Scraped article:", length(title), "\n")
+    Sys.sleep(1)
+  }
+}
+
+#merging all vectors to data frame
+dataArticles <- data.frame(title, author, subject, abstract, meta)
+#View(dataArticles)
+
+end <- proc.time()
+end - start # Total Elapsed Time
+
+
+
+
+```
+
+
+# Export the result
+```{r}
+
+save(dataArticles, file = "Arxiv_Information_Extraction.RData")
+write.csv(dataArticles, file = "Arxiv papers on Information Extraction.csv")
+```
+
+
+#Inserting Dataframe to Database
+
+```{r}
+library(DBI)
+library(odbc)
+library(RMySQL)
+library(dplyr,dbplyr)
+connection <- dbConnect(RMySQL::MySQL(),
+                        dsn="MariaDB-connectionr",
+                        Server = "localhost",
+                        dbname = "suero_2c", 
+                        user = "root", 
+                        password = "") 
+
+```
+
+```{r}
+articles <- read.csv("Arxiv papers on Information Extraction.csv")
+tail(articles)
+
+```
+
+# writing Table to Database
+
+```{r}
+dbExecute(connection, "DROP TABLE IF EXISTS Lab4ArticlesData")
+dbWriteTable(connection, 'Lab4ArticlesData', articles, append = TRUE)
+
+```
+
+#listing of tables
+
+```{r}
+dbListTables(connection)
+dbListFields(connection,"Lab4ArticlesData")
+```
+
+# Reading data from table
+
+```{r}
+
+review_data <- dbGetQuery(connection, "SELECT * FROM suero_2c.Lab4ArticlesData")
+glimpse(review_data)
+
+```
+   
