@@ -1,0 +1,103 @@
+---
+title: "Lab Exercise 5"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-03-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Cleanig Lab Exercise 4
+
+```{r}
+library(readr)
+library(stringr)
+library(dplyr)
+
+# Load Arxiv Scraped Dataset
+arxiv <- read_csv("/cloud/project/Lab Exercise 5/Datasets/Arxiv papers on Information Extraction.csv")
+
+# The meta column date will be extracted 
+arxiv_date_only <- str_extract(arxiv$meta, "\\d+\\s[A-Za-z]+\\s\\d+")
+
+
+# Data type change
+arxivDateType <- as.Date(arxiv_date_only, format = "%d %b %Y")
+head(arxivDateType)
+
+# Removing the meta and number columns and add the new date column
+
+# Mutating all columns, converting them to lowercase, and remove any text within parentheses in the subject column. Finally, merge the new date column with the rest of the data.
+
+cleanedArxiv <- arxiv %>%
+  mutate(date = arxivDateType,
+         subject = gsub("\\s\\(.*\\)", "", subject),
+         across(where(is.character), tolower)) %>%
+  select(-meta, -...1)
+
+
+
+# Writing to CSV
+write.csv(cleanedArxiv, "/cloud/project/Lab Exercise 5/cleanedArxiv.csv")
+
+
+```
+
+# Cleaning Lab Exercise 5 
+
+```{r, warning=FALSE}
+library(readr)
+library(stringr)
+library(dplyr)
+
+# Load Arxiv Scraped Dataset
+productsReviews <- read_csv("/cloud/project/Lab Exercise 5/Datasets/allProds.csv")
+
+# Extract the date information from the meta column and convert it to a date type.
+reviewsDataType <- as.Date(str_extract(productsReviews$date, "\\d+\\s[A-Za-z]+\\s\\d+"), format = "%d %b %Y")
+
+# Retrieve the rating from the rating column and convert it to an integer.
+reviewsRatingsInteger <- as.integer(str_extract(productsReviews$ratings, "\\d+\\.\\d+"))
+
+# Remove all emoticons from the columns.
+productsReviews$title <- gsub("\\p{So}", "", productsReviews$title, perl = TRUE)
+
+productsReviews$reviewer <- gsub("\\p{So}", "", productsReviews$reviewer, perl = TRUE)
+
+productsReviews$review <- gsub("\\p{So}", "", productsReviews$review, perl = TRUE)
+
+# Removing non-alphabetical languages from the columns
+productsReviews$title <- gsub("[^a-zA-Z ]", "", productsReviews$title)
+
+productsReviews$reviewer <- gsub("[^a-zA-Z ]", "", productsReviews$reviewer)
+
+productsReviews$review <- gsub("[^a-zA-Z ]", "", productsReviews$review)
+
+
+# All blank will be replace by a NA
+productsReviews$title <- na_if(productsReviews$title, "")
+
+productsReviews$reviewer <- na_if(productsReviews$reviewer, "")
+
+productsReviews$review <- na_if(productsReviews$review, "")
+
+# Converting all to columns to lowercase
+productsReviews <- productsReviews %>%
+  mutate(across(where(is.character), tolower)) %>%
+  select(-...1)
+
+# Combined
+cleanedReviews <- productsReviews %>%
+  mutate(date = reviewsDataType, ratings = reviewsRatingsInteger)
+
+if (!dir.exists("Cleaned Data Articles/")) {
+  dir.create("Cleaned Data Articles/")
+}
+
+# Writing to CSV
+write.csv(cleanedReviews, "Cleaned Data Articles/cleanedReviews.csv")
+```
